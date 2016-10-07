@@ -52,7 +52,7 @@ class flows:
         # obtain the data
         data = self.cursor.fetchall()
         # convert data to a string
-        return json.dumps(data)
+        return json.dumps(data, default=helper.decimal_encoder)
     
 class nodes:
     def GET(self, table, connection_string=helper.get_connection_string(os.environ['DATABASE_URL'])):
@@ -77,7 +77,7 @@ class nodes:
         # obtain the data
         data = self.cursor.fetchall()
         # convert data to a string
-        return json.dumps(data)
+        return json.dumps(data, default=helper.decimal_encoder)
     
 class node_groups:
     def GET(self, connection_string=helper.get_connection_string(os.environ['DATABASE_URL'])):
@@ -131,7 +131,7 @@ class node_groups:
         # obtain the data
         data = self.cursor.fetchall()
         # convert data to a string
-        return json.dumps(data)
+        return json.dumps(data, default=helper.decimal_encoder)
 	
 class geography:
     def GET(self, data_type, polygon_type, connection_string=helper.get_connection_string(os.environ['DATABASE_URL'])):
@@ -196,7 +196,7 @@ class geography:
         # obtain the data
         data = self.cursor.fetchall()
         # convert data to a string
-        return json.dumps(data)
+        return json.dumps(data, default=helper.decimal_encoder)
     
 class ng_directives:
     def GET(self, vis_id, connection_string=helper.get_connection_string(os.environ['DATABASE_URL'])):
@@ -213,8 +213,8 @@ class ng_directives:
         # obtain the data
         data = self.cursor.fetchall()
         # convert data to a string
-        return json.dumps(data)
-    
+        return json.dumps(data, default=helper.decimal_encoder)
+
 class heuristic_comparison:
     def GET(self, connection_string=helper.get_connection_string(os.environ['DATABASE_URL'])):
         # connect to postgresql based on configuration in connection_string
@@ -290,7 +290,7 @@ class heuristic_comparison:
         # obtain the data
         data = self.cursor.fetchall()
         # convert data to a string
-        return json.dumps(data)
+        return json.dumps(data, default=helper.decimal_encoder)
 	
 class heuristic_timeseries:
     def GET(self, connection_string=helper.get_connection_string(os.environ['DATABASE_URL'])):
@@ -377,7 +377,7 @@ class heuristic_timeseries:
         # obtain the data
         data = self.cursor.fetchall()
         # convert data to a string
-        return json.dumps(data)
+        return json.dumps(data, default=helper.decimal_encoder)
     
 class heuristic_partofwhole:
     def GET(self, connection_string=helper.get_connection_string(os.environ['DATABASE_URL'])):
@@ -454,7 +454,7 @@ class heuristic_partofwhole:
         # obtain the data
         data = self.cursor.fetchall()
         # convert data to a string
-        return json.dumps(data)
+        return json.dumps(data, default=helper.decimal_encoder)
     
 class heuristic_relatedness:
     def GET(self, connection_string=helper.get_connection_string(os.environ['DATABASE_URL'])):
@@ -493,18 +493,34 @@ class heuristic_relatedness:
         select v.*,
         vt.name as vis_type_name,
         vt.url_name as vis_type_urlname,
-        vd.name as directive,
-        dd.data
+        vd.name as directive--,
+        --dd.data
         from """ + helper.table_prefix + """vis v
         left join """ + helper.table_prefix + """vis_directive vd on vd.id = v.vis_directive_id
         left join """ + helper.table_prefix + """vis_type vt on vt.id = v.vis_type_id
-        left join data_array dd on dd.vis_id = v.id
+        --left join data_array dd on dd.vis_id = v.id
         where vt.url_name = 'relatedness';
         """)
         # obtain the data
         data = self.cursor.fetchall()
+        
+        # temp open from file for now
+        with open("related.json") as json_data:
+
+            # dict
+            fc = json.load(json_data)
+            
+            # loop through meta info 
+            for obj in data:
+                
+                # add dummy data until db is updated
+                obj["data"] = fc
+            
+            # convert data to a string
+            return json.dumps(data)
+        
         # convert data to a string
-        return json.dumps(data)
+        #return json.dumps(data, default=helper.decimal_encoder)
     
 class heuristic_hierarchy:
     def GET(self, connection_string=helper.get_connection_string(os.environ['DATABASE_URL'])):
@@ -580,8 +596,24 @@ class heuristic_hierarchy:
         """)
         # obtain the data
         data = self.cursor.fetchall()
+        
+        # temp open from file for now
+        with open("hierarchy.json") as json_data:
+
+            # dict
+            fc = json.load(json_data)
+            
+            # loop through meta info 
+            for obj in data:
+                
+                # add dummy data until db is updated
+                obj["data"] = fc
+            
+            # convert data to a string
+            return json.dumps(data)
+        
         # convert data to a string
-        return json.dumps(data)
+        #return json.dumps(data, default=helper.decimal_encoder)
     
 # instantiate the application
 app = web.application(urls, locals())

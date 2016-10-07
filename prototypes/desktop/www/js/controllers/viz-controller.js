@@ -7,6 +7,7 @@ angular.module("viz-controller", [])
 	$scope.nodeGroups;
 	$scope.heuristics;
 	$scope.tileGridData;
+	$scope.boundaryData;
     
     // country nodes
 	contentService.getData("visualization/cdis/").then(function(data) {
@@ -31,7 +32,34 @@ angular.module("viz-controller", [])
 		$scope.tileGridData = data;
 		
 	});
-	
+
+
+	// geojson
+	contentService.getData("visualization/geography/geojson/boundary/").then(function(data) {
+		
+		// set scope
+		$scope.boundaryData = data;
+		
+	});
+
+
+    // classification json
+	contentService.getData("tiny_time.json").then(function(data) {
+		
+		// set scope
+		$scope.poseidonData = data;
+		
+	});
+    //node link json 
+	contentService.getData("nodes_file.json").then(function(data) {
+		
+		// set scope
+		$scope.poseidonNodeData = data;
+		
+	});
+    
+    
+
 	// check for heuristic url param
 	if ($state.params.heuristic) {
 	
@@ -46,6 +74,4 @@ angular.module("viz-controller", [])
 		
 	};
     
-
-																																  
 }]);

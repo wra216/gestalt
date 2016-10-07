@@ -9,6 +9,7 @@ angular.module("heatmap-grid-directive", [])
             canvasHeight: "=",
             useLabels: "="
         },
+        template: "<div><p ng-repeat='attr in attrs'><span>{{attr.name}}:</span>{{attr.value}}</p></div>",
         link: function(scope, element, attrs){
             
             // set up the dom node to attach the d3 to
@@ -39,10 +40,11 @@ angular.module("heatmap-grid-directive", [])
                 
                 // format the date
                 // d3 wants very specific date format and this is easiest way to get there
-                var parseDate = d3.time.format("%Y-%m-%d").parse;
+                var parseDate = d3.time.format("%Y-%m-%dT%H:%M:%S").parse;
                 
                 // x-scale
-                var xScale = d3.scale.ordinal(); 
+                var xScale = d3.time.scale();
+                var xScaleOrdinal = d3.scale.ordinal();
                 
                 // y-scale
                 var yScale = d3.scale.ordinal();
@@ -92,12 +94,14 @@ angular.module("heatmap-grid-directive", [])
                             });
                             
                             // format date so d3 don't yell at you
+                            // it gets mad when you don't supply d3 date objects in a time scale function
+                            // could use JS date objects but they are inconcsistent between browsers
                             data.forEach(function(o) {
                                 
                                 o.values.forEach(function(d) {
                                     
                                     // map new values to data
-                                    d.date = parseDate(d.timestamp.split("T")[0]);
+                                    d.date = parseDate(d.timestamp);
                                     
                                 });
                                 
@@ -110,11 +114,17 @@ angular.module("heatmap-grid-directive", [])
                             var maxPadding = d3.max([fontSize, gutter], function(d) { return d; });
                             var xScaleMin = useLabel ? labelWidth : 0;
                             var xScaleMax = width;
-                                                        
+                            var minDate = parseDate(data[0].values[0].timestamp); // need to parse raw timestamp into d3 date obj
+                            var maxDate = d3.time.minute.offset(parseDate(data[0].values[data[0].values.length-1].timestamp),15); // need a d3 date object that continues the interval in the data range, in this case we add an ending max value that is 15 minutes ahead of the last value in the array of values
+                                                     
                             // add data to x-scale layout algorithm
-                            xScale.domain(unest.map(function(d) { return d.date; }));
-                            xScale.range([xScaleMin, xScaleMax])
-                            xScale.rangeRoundBands([xScaleMin, xScaleMax], gutter);
+                            xScale.domain([minDate, maxDate]);
+                            xScale.range([xScaleMin, xScaleMax]);
+                            
+                            // add data to x-scale ordinal layout algorithm
+                            // to calculate cell width automatically
+                            xScaleOrdinal.domain(data[0].values.map(function(d) { return d.timestamp; }))
+                            xScaleOrdinal.rangeRoundBands([xScaleMin, xScaleMax]);
                             
                             // add data to y-scale layout algorithm
                             yScale.domain(data.map(function(d) { return d.name; }));
@@ -136,7 +146,7 @@ angular.module("heatmap-grid-directive", [])
                                 
                                     var groupD = d;
                                     var group = d3.select(this);
-                                
+                                    var rowName = d.name;
                                     // LABEL
 								
 									// check setting
@@ -175,6 +185,9 @@ angular.module("heatmap-grid-directive", [])
                                 
                                     // CELL
                                 
+                                    var cellCount = d.values.length;
+                                    var cellWidth = (width - xScaleMin) / cellCount;
+                                
                                     // set selection
                                     var cell = group
                                         .selectAll("rect")
@@ -187,11 +200,22 @@ angular.module("heatmap-grid-directive", [])
                                         .attr({
                                             x: function(d) { return xScale(d.date); },
                                             y: yScale(groupD.name),
-                                            width: xScale.rangeBand(),
+                                            width: xScaleOrdinal.rangeBand(),
                                             height: yScale.rangeBand()
                                         })
+                                        /*.on("click", function(d){
+                                        
+                                        d3.select("#myInfoBlock")
+                                            .selectAll("p")
+                                            .data([d])
+                                            .enter()
+                                            .append("p")
+                                            .text(function(d){d['srcip']});
+                                        
+                                        })*/
                                         .style({
-                                            opacity: function(d) { return cScale(d.value); }
+                                            //opacity: function(d) { return cScale(d.value); }
+                                            fill: function(d) { return d.classifier_label !== rowName ? "red" : "blue" ;}
                                         });
                                 
                                     // enter selection
@@ -203,13 +227,36 @@ angular.module("heatmap-grid-directive", [])
                                         .attr({
                                             x: function(d) { return xScale(d.date); },
                                             y: yScale(groupD.name),
-                                            width: xScale.rangeBand(),
+                                            width: xScaleOrdinal.rangeBand(),
                                             height: yScale.rangeBand()
                                         })
+                                        /*.on("click", function(d){
+                                        
+                                        d3.select("#myInfoBlock")
+                                            .selectAll("p")
+                                            .data([d])
+                                            .enter()
+                                            .append("p")
+                                            .text(function(d){d['srcip']});
+                                        
+                                        })*/
                                         .style({
-                                            opacity: function(d) { return cScale(d.value); }
+                                            //opacity: function(d) { return cScale(d.value); }
+                                            fill: function(d) { console.log("Classlabel",d.classifier_label);console.log("name",rowName);return d.classifier_label !== rowName ? "red" : "blue" ;}
                                         });
-                                
+                                    
+                                    cell
+                                        .on("click", function(d){
+                                        
+                                        var dKeys = Object.keys(d);
+                                        console.log("dkeys",dKeys);
+                                        var attrs = dKeys.map(function(a){
+                                            return {name: a,value: d[a] }; 
+                                        });
+                                        
+                                        scope.attrs = attrs
+                                    });
+                                    
                                     // exit selection
                                     cell
                                         .exit()

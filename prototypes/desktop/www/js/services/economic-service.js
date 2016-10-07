@@ -20,9 +20,13 @@
         // * handling series
         var getAllSeriesUrl = economicBackendBaseUrl + "getAllSeriesByTableName";
         // * handling values
+        var getAllValuesUrl = economicBackendBaseUrl + "extractSeriesValuesBySeries";
+        var getAllValuesByMostRecentDateUrl = economicBackendBaseUrl + "extractSeriesValuesBySeriesAndMostRecentDate";
         var getValuesByCountryUrl = economicBackendBaseUrl + "extractSeriesValuesByCountry";
-        var getValuesByCountryAndDateUrl = economicBackendBaseUrl + "extractSeriesValuesByCountryAndDate";        
+        var getValuesByCountryAndMostRecentDateUrl = economicBackendBaseUrl + "extractSeriesValuesByCountryAndMostRecentDate";
+        var getValuesByCountryAndDateUrl = economicBackendBaseUrl + "extractSeriesValuesByCountryAndDate";
         var getValuesByRegionUrl = economicBackendBaseUrl + "extractSeriesValuesByRegion";
+        var getValuesByRegionAndMostRecentDateUrl = economicBackendBaseUrl + "extractSeriesValuesByRegionAndMostRecentDate";
         var getValuesByRegionAndDateUrl = economicBackendBaseUrl + "extractSeriesValuesByRegionAndDate";
         // * handling subgroups
         var getAllSubgroupsUrl = economicBackendBaseUrl + "getAllSubgroupsByGroup";
@@ -40,9 +44,13 @@
             // * handling series
             getAllSeries: getAllSeries,
             // * handling values
+            getAllValues: getAllValues,
+            getAllValuesByMostRecentDate: getAllValuesByMostRecentDate,
             getValuesByCountry: getValuesByCountry,
+            getValuesByCountryAndMostRecentDate: getValuesByCountryAndMostRecentDate,
             getValuesByCountryAndDate: getValuesByCountryAndDate,
             getValuesByRegion: getValuesByRegion,
+            getValuesByRegionAndMostRecentDate: getValuesByRegionAndMostRecentDate,
             getValuesByRegionAndDate: getValuesByRegionAndDate,
             // * handling subgroups
             getAllSubgroups: getAllSubgroups,
@@ -76,24 +84,62 @@
         }
 
         // ============================
-        // * handling sources         
+        // * handling sources
         // ============================
         function getAllSources() {
             return callBackend(getAllSourcesUrl);
         }
 
         // ============================
-        // * handling series         
+        // * handling series
         // ============================
         function getAllSeries(tableName) {
             return callBackend(getAllSeriesUrl + "/" + tableName);
         }
 
         // ============================
-        // * handling values       
+        // * handling values
         // ============================
+        function getAllValues(seriesId) {
+            return callBackend(getAllValuesUrl + "/" + seriesId);
+        }
+
+        function getAllValuesByMostRecentDate(seriesId) {
+            return callBackend(getAllValuesByMostRecentDateUrl + "/" + seriesId);
+        }
+
+        function getAllValuesByCategoricalValues(seriesId, low_val, high_val) {
+            return callBackend(getAllValuesByCategoricalValuesUrl + "/series/" + seriesId + 
+                                                                    "/low_value/" + low_val + 
+                                                                    "/high_value/" + high_val);
+        }
+
+        function getAllValuesByValueGT(seriesId, value) {
+            return callBackend(getAllValuesByValueGTUrl + "/series/" + seriesId + 
+                                                          "/value/" + value);
+        }
+
+        function getAllValuesByValueGTE(seriesId, value) {
+            return callBackend(getAllValuesByValueGTEUrl + "/series/" + seriesId + 
+                                                           "/value/" + value);
+        }
+
+        function getAllValuesByValueLT(seriesId, value) {
+            return callBackend(getAllValuesByValueLTUrl + "/series/" + seriesId + 
+                                                          "/value/" + value);
+        }
+
+        function getAllValuesByValueLTE(seriesId, value) {
+            return callBackend(getAllValuesByValueLTEUrl + "/series/" + seriesId + 
+                                                           "/value/" + value);
+        }
+
         function getValuesByCountry(seriesId, countryId) {
             return callBackend(getValuesByCountryUrl + "/series/" + seriesId + "/country/" + countryId);
+        }
+
+        function getValuesByCountryAndMostRecentDate(seriesId, countryId) {
+            return callBackend(getValuesByCountryAndMostRecentDateUrl + "/series/" + seriesId + "/country/" + countryId);
         }
 
         function getValuesByCountryAndDate(seriesId, countryId, date) {
@@ -104,12 +150,16 @@
             return callBackend(getValuesByRegionUrl + "/series/" + seriesId + "/group/" + groupId + "/subgroup/" + subgroupId);
         }
 
+        function getValuesByRegionAndMostRecentDate(seriesId, groupId, subgroupId) {
+            return callBackend(getValuesByRegionAndMostRecentDateUrl + "/series/" + seriesId + "/group/" + groupId + "/subgroup/" + subgroupId);
+        }
+
         function getValuesByRegionAndDate(seriesId, groupId, subgroupId, date) {
             return callBackend(getValuesByRegionAndDateUrl + "/series/" + seriesId + "/group/" + groupId + "/subgroup/" + subgroupId + "/date/" + date);
         }
 
         // ============================
-        // * handling subgroups         
+        // * handling subgroups
         // ============================
         function getAllSubgroups(groupId) {
             return callBackend(getAllSubgroupsUrl + "/" + groupId);
@@ -118,9 +168,9 @@
         function getAllCountries(groupId, subgroupId) {
             return callBackend(getAllCountriesUrl + "/group/" + groupId + "/subgroup/" + subgroupId);
         }
-                
+
         // ============================
-        // * handling MV          
+        // * handling MV
         // ============================
         function insertSeries(tableName, seriesId) {
             return callBackend(insertSeriesUrl + "/table_name/" + tableName + "/series/" + seriesId);

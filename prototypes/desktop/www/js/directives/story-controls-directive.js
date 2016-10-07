@@ -1,14 +1,18 @@
 angular.module("story-controls-directive", [])
 
-.directive("storyControls", ["contentService", "$rootScope", "$state", function (contentService, $rootScope, $state) {
+.directive("storyControls", ["contentService", "highlightService", "$rootScope", "$state", "$http", function (contentService, highlightService, $rootScope, $state, $http) {
     return {
         restrict: "E",
-        templateUrl: "templates/directives/story-controls.html",
         scope: {
             controls: "=",
+            controlType: "=",
             visTypeName: "="
         },
+        template: "<ng-include src='getTemplateUrl();'/>",
         controller: function($scope, $filter) {
+
+            $scope.highlight = highlightService.getHighlightMode;
+            $scope.toggleHighlighting = highlightService.toggleHighlightMode;
 
             // story idea functionality
             $scope.changeOption = function(ideaName, ideaId, controlId) {
@@ -16,7 +20,7 @@ angular.module("story-controls-directive", [])
                 // TODO abstract so functionality is data driven not hardcoded here
 
                 // check control id
-                //if (controlId < 12) {
+                if ($scope.visTypeName == undefined) {
 
                     // get current idea corresponding impact metric
                     contentService.getData("story/idea/" + ideaId + "/metric/" + controlId + "/").then(function(data) {
@@ -38,7 +42,7 @@ angular.module("story-controls-directive", [])
 
                     });
 
-                /*} else {
+                } else {
 
                     // get current set of heuristics
                     contentService.getData("visualization/heuristics/" + $scope.visTypeName + "/").then(function(data) {
@@ -54,28 +58,43 @@ angular.module("story-controls-directive", [])
 
                     });
 
-                }*/
+                }
 
             };
 
         },
         link: function(scope, element, attrs) {
+            
+            var controlType = attrs.controlType == "button" ? "button" : "drop-down";
+                                
+            // data objects
+            scope.getTemplateUrl = function() {
+                return "templates/directives/story-controls-" + controlType + ".html";
+            };
 
+            // watch change in controls
             scope.$watch("controls", function(newData, oldData) {
 
                 // async check
-                if (newData !== undefined) {
+                if (newData !== undefined && newData[0] !== null) {
+                    
+                    var controlType = attrs.controlType;
+                    
+                    // check type
+                    if (controlType == "drop-down") {
 
-                    var data = newData;
+                        var data = newData;
 
-                    // set initial values
-                    angular.forEach(data, function(value, key) {
+                        // set initial values
+                        angular.forEach(data, function(value, key) {
 
-                        // add scope value
-                        scope[value.label] = "Not Set";
-                        scope[value.label + "Open"] = false;
+                            // add scope value
+                            scope[value.label] = "Not Set";
+                            scope[value.label + "Open"] = false;
 
-                    });
+                        });
+                        
+                    };
 
                 };
 

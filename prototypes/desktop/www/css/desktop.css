@@ -11,18 +11,15 @@
 /* --- !item
 /* --- !menu
 /* --- !login
+/* --- !visual form
 /* --- !heuristic
+/* --- !classification
+/* !MEDIA QUERIES
 
 /******************************* !IMPORTS *******************************/
 @import url("reset.css");
 
 /******************************* !GLOBALS *******************************/
-
-html, body {
-
-    font-size: 16px;
-
-}
 
 html,
 body,
@@ -41,6 +38,16 @@ a {
 
 }
 
+hgroup,
+h2,
+h3 {
+    
+    margin-bottom: 2em;
+    max-width: 500px;
+    width: 60%;
+    
+}
+
 h1, h2, h3 {
 
     font-family: "header-regular", "Source Sans Pro Light", sans-serif;
@@ -51,14 +58,19 @@ h1, h2, h3 {
 h2, h3 {
 
     font-size: 1.5em;
-    max-width: 500px;
-    width: 60%;
 
+}
+
+hgroup h2 {
+    
+    margin-bottom: 0.5em;
+    width: 100%;
+    
 }
 
 p {
 
-    line-height: 1.2;
+    line-height: 1.4;
     margin-bottom: 1em;
     font-family: "body-copy-light"
 
@@ -343,8 +355,7 @@ button:focus {
 .login {
 
     left: 50%;
-    max-width: 900px;
-    padding: 5em;
+    max-width: 1500px;
     position: absolute;
     top: 50%;
     -webkit-transform: translate(-50%,-50%);
@@ -356,36 +367,120 @@ button:focus {
 
 }
 
-/* login headline subtext */
-.login h2 + p {
-
-    margin-bottom: 2em;
-
+/* headline */
+.login hgroup h2 {
+    
+    margin-bottom: 1em;
+    
 }
 
-/* wrap personas */
+/* intro text */
+.login hgroup p:first-of-type {
+    
+    font-size: 1.15em;
+    margin-top: 2em;
+    
+}
+
+/* inline menu icon */
+.login hgroup i {
+    
+    margin-left: 0.45em;
+    margin-right: 0.45em;
+    
+}
+
+/* intro call to action */
+.login hgroup p:last-child {
+    
+    font-family: "body-copy-regular";
+    font-weight: 700;
+    margin-top: 2em;
+    
+}
+
+/* all personas wrap */
 .login section {
 
     display: flex;
     flex-wrap: wrap;
+    margin-top: 3em;
     padding: 0;
+    width: 100%;
 
 }
 
-/* persona */
+/* persona wrap */
 .login section div {
 
     cursor: pointer;
-    padding: 2em;
-    width: calc(50% - 4em);
+    margin-right: 25px;
+    margin-top: 2em;
+    width: calc(33% - 12.5px);
 
 }
 
-.login section div p:first-child {
+/* persona wrap far-right elements (every third) */
+.login section div:nth-child(3n + 3) {
+    
+    margin-right: 0;
+    
+}
 
-    font-weight: 700;
+/* persona name */
+.login section div p:first-of-type {
+
+    font-family: "body-copy-regular";
+    font-size: 1.5em;
     text-transform: capitalize;
 
+}
+
+/* persona description */
+.login section div p:last-of-type {
+
+    max-width: 400px;
+
+}
+
+/* persona type */
+.login section div span {
+    
+    font-size: 0.8em;
+    display: inline-block;
+    margin-bottom: 1em;
+    padding: 0.25em;
+    text-transform: uppercase;
+    
+}
+
+/*************************/
+/***** !visual form ******/
+/*************************/
+
+/* wrap all cards */
+.visual-form > div {
+    
+    display: flex;
+    flex-wrap: wrap;
+    margin-top: 2em;
+    
+}
+
+/* individual idea div */
+.visual-form > div > div {
+    
+    margin-bottom: 2em;
+    margin-right: 50px;
+    width: calc(15% - 40px);
+    
+}
+
+/* last individual idea div */
+.visual-form > div > div:last-of-type {
+    
+    margin-right: 0;
+    
 }
 
 /***********************/
@@ -421,6 +516,7 @@ button:focus {
 .heuristic figure > div,
 .heuristic figcaption > div {
 
+    margin-right: 100px;
     padding: 1em;
     width: calc(100% / 3);
 
@@ -510,4 +606,30 @@ button:focus {
 
     font-weight: 700;
 
+}
+
+/****************************/
+/***** !classification ******/
+/****************************/
+
+/* heatmap grid */
+.classification heatmap-grid {
+    
+    display: block;
+    min-width: 500px;
+    width: 20%;
+    
+}
+
+/* TEMP bootsrap overrides */
+.label {
+    
+    color: currentColor;
+    
+}
+
+/******************************* !MEDIA QUERIES *******************************/
+
+@media (max-width: 600px) {
+    
 }

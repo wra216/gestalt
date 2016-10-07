@@ -11,6 +11,13 @@ angular.module("slide-panel-directive", [])
         },
         controller: function($scope) {
             
+            // get PERSONA CONTENT data stored in service
+            authenticationService.getData("").then(function(data) {
+
+                $scope.personas = data;
+
+            });
+            
             // log out
             $scope.logout = function() {
 
@@ -21,7 +28,7 @@ angular.module("slide-panel-directive", [])
                 layoutService.clearValues(["workspaces", "workspace", "panels", "panel"]);
 
                 // transition state
-                $state.go("login");
+                $state.go("login", $state.params);
 
             };
             

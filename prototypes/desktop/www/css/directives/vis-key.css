@@ -17,11 +17,9 @@
 
 /******************************* !CUSTOM *******************************/
 
-.vis-key__container {
-    position: absolute;
-    top: 0px;
-    left: 0px;
-    margin: 6rem 1.5rem 0 1.5rem;
+.vis-key__container h2 {
+    margin-bottom: 0.5em;
+    margin-top: 0.5em;
 }
 
 .show-key {
@@ -46,7 +44,7 @@
 
 .vis-key {
     width: 20rem;
-    background-color: #e2e2e2;
+    background-color: #ffffff;
     border: 1px solid #7c7c7c;
     padding: 15px;
 }
